@@ -1,11 +1,13 @@
 package amirvalizadeh;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 import robocode.HitByBulletEvent;
 import robocode.HitWallEvent;
 import robocode.Robot;
 import robocode.ScannedRobotEvent;
+
 
 public class amirvalizadeh extends Robot{
 
@@ -34,26 +36,52 @@ public class amirvalizadeh extends Robot{
     }
         public void onScannedRobot(ScannedRobotEvent e)
         {
-            double enemyAbsBearing = e.getBearingRadians() + e.getHeadingRadians();
-            turnRight(enemyAbsBearing + 90);
+            double enemyBearing = e.getBearing();
+            double enemyDistance = e.getDistance();
 
-            turnGunRight(enemyAbsBearing);
+            double myHeading = getHeading();
+            double myX = getX();
+            double myY = getY();
+            double enemyAbsBearing = myHeading + enemyBearing;
 
-            double distanceOfEnemy = e.getDistance();
+            double enemyX = myX + enemyDistance * Math.sin(Math.toRadians(enemyAbsBearing));
+            double enemyY = myY + enemyDistance * Math.cos(Math.toRadians(enemyAbsBearing));
+            // ^ - polar coordinates translated to cartesian coordinates; x = r*sin(theta); y = r*cos(theta)
 
-            if(distanceOfEnemy < 200)
+            double futureX = enemyX + e.getVelocity() * Math.sin(Math.toRadians(e.getHeading())) * 20;
+            double futureY = enemyY + e.getVelocity() * Math.cos(Math.toRadians(e.getHeading())) * 20;
+
+            double absDegree = absoluteBearing(myX, myY, futureX, futureY);
+
+            turnGunRight(normalizeBearing(absDegree - getGunHeading()));
+            if(getGunHeat() == 0)
             {
-                fire(3);
-            } else if(distanceOfEnemy < 500){
-                fire(1.5);
-            } else{
-                fire(1);
+                if (enemyDistance < 150)
+                {
+                    fire(3);
+                } else if (enemyDistance < 500)
+                {
+                    fire(2);
+                } else
+                {
+                    fire(1);
+                }
+            }
+
+            turnRight(normalizeBearing(enemyBearing + 90 - (15 * moveDirection)));
+            if (enemyDistance > 100)
+            {
+                ahead((enemyDistance - 100) * moveDirection);
+            } else {
+                back(50 * moveDirection);
             }
         }
 
+
         public void onHitByBullet(HitByBulletEvent e)
         {
-            back(90);
+            moveDirection *= -1;
+            back(150 * moveDirection);
         }
 
         public void onHitWall(HitWallEvent e)
@@ -62,5 +90,42 @@ public class amirvalizadeh extends Robot{
             ahead(100 * moveDirection);
         }
     
+        public double absoluteBearing(double x1, double y1, double x2, double y2)
+        {
+            double xo = x2 - x1;
+            double yo = y2 - y1;
+            double hypotenuse = Point2D.distance(x1, y1, x2, y2);
+            double arcSin = Math.toDegrees(Math.asin(xo / hypotenuse));
+            double bearing = 0;
+
+            if (xo > 0 && yo > 0)
+            {
+                bearing = arcSin;
+            } else if (xo < 0 && yo > 0)
+            {
+                bearing = 180 - arcSin;
+            } else if (xo > 0 && yo < 0)
+            {
+                bearing = 180 - arcSin;
+            } else if (xo < 0 && yo < 0)
+            {
+                bearing = 180 - arcSin;
+            }
+
+            return bearing;
+        }
+
+        public double normalizeBearing(double angle)
+        {
+            if (angle > 180)
+            {
+                angle -= 360;
+            } else if(angle < 180)
+            {
+                angle += 360;
+            }
+
+            return angle;
+        }
 
 }
