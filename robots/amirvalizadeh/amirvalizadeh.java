@@ -50,10 +50,12 @@ public class amirvalizadeh extends Robot{
 
             double futureX = enemyX + e.getVelocity() * Math.sin(Math.toRadians(e.getHeading())) * 20;
             double futureY = enemyY + e.getVelocity() * Math.cos(Math.toRadians(e.getHeading())) * 20;
+            //predict future location of enemy
 
             double absDegree = absoluteBearing(myX, myY, futureX, futureY);
 
             turnGunRight(normalizeBearing(absDegree - getGunHeading()));
+            
             if(getGunHeat() == 0)
             {
                 if (enemyDistance < 150)
@@ -89,31 +91,29 @@ public class amirvalizadeh extends Robot{
             moveDirection *= -1;
             ahead(100 * moveDirection);
         }
-    
+        
+        
         public double absoluteBearing(double x1, double y1, double x2, double y2)
         {
             double xo = x2 - x1;
             double yo = y2 - y1;
             double hypotenuse = Point2D.distance(x1, y1, x2, y2);
-            double arcSin = Math.toDegrees(Math.asin(xo / hypotenuse));
-            double bearing = 0;
+            double bearing = Math.toDegrees(Math.asin(xo / hypotenuse));
 
-            if (xo > 0 && yo > 0)
+            if (xo > 0 && yo < 0)
             {
-                bearing = arcSin;
-            } else if (xo < 0 && yo > 0)
-            {
-                bearing = 180 - arcSin;
-            } else if (xo > 0 && yo < 0)
-            {
-                bearing = 180 - arcSin;
+                bearing = 180 - bearing;
             } else if (xo < 0 && yo < 0)
             {
-                bearing = 180 - arcSin;
+                bearing = 180 - bearing;
+            } else if (xo < 0 && yo > 0)
+            {
+                bearing = 360 + bearing;
             }
 
             return bearing;
         }
+        
 
         public double normalizeBearing(double angle)
         {
