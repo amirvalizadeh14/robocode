@@ -48,11 +48,11 @@ public class amirvalizadeh extends Robot{
             double enemyY = myY + enemyDistance * Math.cos(Math.toRadians(enemyAbsBearing));
             // ^ - polar coordinates translated to cartesian coordinates; x = r*sin(theta); y = r*cos(theta)
 
-            double futureX = enemyX + e.getVelocity() * Math.sin(Math.toRadians(e.getHeading())) * 20;
-            double futureY = enemyY + e.getVelocity() * Math.cos(Math.toRadians(e.getHeading())) * 20;
+            //double futureX = enemyX + e.getVelocity() * Math.sin(Math.toRadians(e.getHeading())) * 20;
+            //double futureY = enemyY + e.getVelocity() * Math.cos(Math.toRadians(e.getHeading())) * 20;
             //predict future location of enemy
 
-            double absDegree = absoluteBearing(myX, myY, futureX, futureY);
+            double absDegree = absoluteBearing(myX, myY, enemyX, enemyY);
 
             turnGunRight(normalizeBearing(absDegree - getGunHeading()));
             
