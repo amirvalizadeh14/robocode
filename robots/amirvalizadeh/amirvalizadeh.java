@@ -48,20 +48,16 @@ public class amirvalizadeh extends Robot{
             double enemyY = myY + enemyDistance * Math.cos(Math.toRadians(enemyAbsBearing));
             // ^ - polar coordinates translated to cartesian coordinates; x = r*sin(theta); y = r*cos(theta)
 
-            //double futureX = enemyX + e.getVelocity() * Math.sin(Math.toRadians(e.getHeading())) * 20;
-            //double futureY = enemyY + e.getVelocity() * Math.cos(Math.toRadians(e.getHeading())) * 20;
-            //predict future location of enemy
-
             double absDegree = absoluteBearing(myX, myY, enemyX, enemyY);
 
             turnGunRight(normalizeBearing(absDegree - getGunHeading()));
             
             if(getGunHeat() == 0)
             {
-                if (enemyDistance < 150)
+                if (enemyDistance < 100)
                 {
                     fire(3);
-                } else if (enemyDistance < 500)
+                } else if (enemyDistance < 200)
                 {
                     fire(2);
                 } else
@@ -100,15 +96,18 @@ public class amirvalizadeh extends Robot{
             double hypotenuse = Point2D.distance(x1, y1, x2, y2);
             double bearing = Math.toDegrees(Math.asin(xo / hypotenuse));
 
-            if (xo > 0 && yo < 0)
+            if (xo > 0 && yo < 0) //lower right quadrant
             {
                 bearing = 180 - bearing;
-            } else if (xo < 0 && yo < 0)
+            } else if (xo < 0 && yo < 0) //lower left quadrant
             {
                 bearing = 180 - bearing;
-            } else if (xo < 0 && yo > 0)
+            } else if (xo < 0 && yo > 0) //upper left quadrant
             {
                 bearing = 360 + bearing;
+            } else if (xo > 0 && yo > 0) //upper right quadrant
+            {
+                bearing = bearing;
             }
 
             return bearing;
