@@ -50,14 +50,23 @@ public class amirvalizadeh extends Robot{
 
             double absDegree = absoluteBearing(myX, myY, enemyX, enemyY);
 
-            turnGunRight(normalizeBearing(absDegree - getGunHeading()));
+            double bearingFromGun = normalizeBearing(absDegree - getGunHeading());
+
+            if(bearingFromGun > 0)
+            {
+                turnGunRight(bearingFromGun);
+            } else{
+                turnGunLeft(- bearingFromGun);
+            }
+
+            //turnGunRight(normalizeBearing(absDegree - getGunHeading()));
             
             if(getGunHeat() == 0)
             {
                 if (enemyDistance < 100)
                 {
                     fire(3);
-                } else if (enemyDistance < 200)
+                } else if (enemyDistance < 300)
                 {
                     fire(2);
                 } else
