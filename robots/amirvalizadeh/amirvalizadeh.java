@@ -28,51 +28,37 @@ public class amirvalizadeh extends Robot{
         while(true)
         {
             turnRadarRight(Double.POSITIVE_INFINITY);
-            double distance = Math.random() * 300;
-            double angle = Math.random() * 45;
-            turnRight(angle);
-            ahead(distance);
+            //double distance = Math.random() * 300;
+            //double angle = Math.random() * 45;
+            //turnRight(angle);
+            //ahead(distance);
         }
     }
         public void onScannedRobot(ScannedRobotEvent e)
         {
             double enemyBearing = e.getBearing();
             double enemyDistance = e.getDistance();
+            double enemyAbsBearing = getHeading() + enemyBearing;
+            double bearingFromGun = normalizeBearing(enemyAbsBearing - getGunHeading());
 
-            double myHeading = getHeading();
-            double myX = getX();
-            double myY = getY();
-            double enemyAbsBearing = myHeading + enemyBearing;
-
-            double enemyX = myX + enemyDistance * Math.sin(Math.toRadians(enemyAbsBearing));
-            double enemyY = myY + enemyDistance * Math.cos(Math.toRadians(enemyAbsBearing));
-            // ^ - polar coordinates translated to cartesian coordinates; x = r*sin(theta); y = r*cos(theta)
-
-            double absDegree = absoluteBearing(myX, myY, enemyX, enemyY);
-
-            double bearingFromGun = normalizeBearing(absDegree - getGunHeading());
-
-            if(bearingFromGun > 0)
+            if(Math.abs(bearingFromGun) <= 3)
             {
                 turnGunRight(bearingFromGun);
+                if (enemyDistance < 100)
+                {
+                    fire(3);
+                } else if (enemyDistance < 300)
+                {
+                    fire(2);
+                } else
+                {
+                    fire(1);
+                }
             } else{
-                turnGunLeft(bearingFromGun);
+                turnGunRight(bearingFromGun);
             }
-
             
-            if (enemyDistance < 100)
-            {
-                fire(3);
-            } else if (enemyDistance < 300)
-            {
-                fire(2);
-            } else
-            {
-                fire(1);
-            }
-        
-
-        turnRight(normalizeBearing(enemyBearing + 90 - (15 * moveDirection)));
+            turnRight(normalizeBearing(enemyBearing + 90 - (15 * moveDirection)));
             if (enemyDistance > 100)
             {
                 ahead((enemyDistance - 100) * moveDirection);
@@ -99,22 +85,8 @@ public class amirvalizadeh extends Robot{
         {
             double xo = x2 - x1;
             double yo = y2 - y1;
-            double hypotenuse = Point2D.distance(x1, y1, x2, y2);
-            double bearing = Math.toDegrees(Math.asin(xo / hypotenuse));
-
-            if (xo > 0 && yo < 0) //lower right quadrant
-            {
-                bearing = 180 - bearing;
-            } else if (xo < 0 && yo < 0) //lower left quadrant
-            {
-                bearing = 180 - bearing;
-            } else if (xo < 0 && yo > 0) //upper left quadrant
-            {
-                bearing = 360 + bearing;
-            } else if (xo > 0 && yo > 0) //upper right quadrant
-            {
-                bearing = bearing;
-            }
+            //double hypotenuse = Point2D.distance(x1, y1, x2, y2);
+            double bearing = Math.toDegrees(Math.atan2(xo, yo));
 
             return bearing;
         }
