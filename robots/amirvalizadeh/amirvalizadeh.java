@@ -1,7 +1,6 @@
 package amirvalizadeh;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 import robocode.HitByBulletEvent;
 import robocode.HitWallEvent;
@@ -28,10 +27,15 @@ public class amirvalizadeh extends Robot{
         while(true)
         {
             turnRadarRight(Double.POSITIVE_INFINITY);
-            //double distance = Math.random() * 300;
-            //double angle = Math.random() * 45;
-            //turnRight(angle);
-            //ahead(distance);
+            double distance = Math.random() * 300;
+            double angle = Math.random() * 45;
+            turnRight(normalizeBearing(angle));
+            if (distance > 100)
+            {
+                ahead(distance);
+            } else {
+                back(distance);
+            }
         }
     }
         public void onScannedRobot(ScannedRobotEvent e)
@@ -41,9 +45,9 @@ public class amirvalizadeh extends Robot{
             double enemyAbsBearing = getHeading() + enemyBearing;
             double bearingFromGun = normalizeBearing(enemyAbsBearing - getGunHeading());
 
-            if(Math.abs(bearingFromGun) <= 3)
+            turnGunRight(bearingFromGun);
+            if(getGunHeat() < 1)
             {
-                turnGunRight(bearingFromGun);
                 if (enemyDistance < 100)
                 {
                     fire(3);
@@ -55,16 +59,14 @@ public class amirvalizadeh extends Robot{
                     fire(1);
                 }
             } else{
-                turnGunRight(bearingFromGun);
+                if(bearingFromGun > 0)
+                {
+                    turnGunRight(bearingFromGun);
+                } else{
+                    turnGunLeft(bearingFromGun);
+                }
             }
             
-            turnRight(normalizeBearing(enemyBearing + 90 - (15 * moveDirection)));
-            if (enemyDistance > 100)
-            {
-                ahead((enemyDistance - 100) * moveDirection);
-            } else {
-                back(50 * moveDirection);
-            }
         }
 
 
