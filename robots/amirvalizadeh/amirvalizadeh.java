@@ -22,20 +22,11 @@ public class amirvalizadeh extends Robot{
 		setBulletColor(Color.red);
 
         setAdjustGunForRobotTurn(true);
-        
+        setAdjustRadarForRobotTurn(true);
 
         while(true)
         {
-            turnRadarRight(Double.POSITIVE_INFINITY);
-            double distance = Math.random() * 300;
-            double angle = Math.random() * 45;
-            turnRight(normalizeBearing(angle));
-            if (distance > 100)
-            {
-                ahead(distance);
-            } else {
-                back(distance);
-            }
+            turnRadarRight(360);
         }
     }
         public void onScannedRobot(ScannedRobotEvent e)
@@ -45,8 +36,13 @@ public class amirvalizadeh extends Robot{
             double enemyAbsBearing = getHeading() + enemyBearing;
             double bearingFromGun = normalizeBearing(enemyAbsBearing - getGunHeading());
 
-            turnGunRight(bearingFromGun);
-            if(getGunHeat() < 1)
+            if(bearingFromGun > 0)
+            {
+                turnGunRight(bearingFromGun);
+            } else{
+                turnGunLeft(bearingFromGun);
+            }
+            if(getGunHeat() == 0)
             {
                 if (enemyDistance < 100)
                 {
@@ -58,15 +54,15 @@ public class amirvalizadeh extends Robot{
                 {
                     fire(1);
                 }
-            } else{
-                if(bearingFromGun > 0)
-                {
-                    turnGunRight(bearingFromGun);
-                } else{
-                    turnGunLeft(bearingFromGun);
-                }
             }
             
+            turnRight(normalizeBearing(enemyBearing + 90 - (15 * moveDirection)));
+            if(enemyDistance > 100)
+            {
+                ahead(enemyDistance - 100);
+            } else {
+                back(50);
+            }
         }
 
 
@@ -87,7 +83,6 @@ public class amirvalizadeh extends Robot{
         {
             double xo = x2 - x1;
             double yo = y2 - y1;
-            //double hypotenuse = Point2D.distance(x1, y1, x2, y2);
             double bearing = Math.toDegrees(Math.atan2(xo, yo));
 
             return bearing;
@@ -96,14 +91,11 @@ public class amirvalizadeh extends Robot{
 
         public double normalizeBearing(double angle)
         {
-            if (angle > 180)
-            {
-                angle -= 360;
-            } else if(angle < 180)
+            angle %= 360;
+            if(angle < 0)
             {
                 angle += 360;
             }
-
             return angle;
         }
 
