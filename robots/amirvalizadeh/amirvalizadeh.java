@@ -77,17 +77,6 @@ public class amirvalizadeh extends Robot{
             moveDirection *= -1;
             ahead(100 * moveDirection);
         }
-        
-        
-        public double absoluteBearing(double x1, double y1, double x2, double y2)
-        {
-            double xo = x2 - x1;
-            double yo = y2 - y1;
-            double bearing = Math.toDegrees(Math.atan2(xo, yo));
-
-            return bearing;
-        }
-        
 
         public double normalizeBearing(double angle)
         {
